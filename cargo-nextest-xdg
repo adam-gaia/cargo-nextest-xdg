@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+USER_CONFIG_DIR="${XDG_CONFIG_HOME}/cargo-nextest"
+USER_CONFIG_FILE="${USER_CONFIG_DIR}/config.toml"
+
+# Even with `set -eo pipefail` cargo not existing caused the workspace finding command to return '.' instead of exiting this script, so we check for cargo early on
+if ! command -v cargo; then
+  echo "cargo: command not found"
+  exit 1
+fi
+
+workspace_root="$(dirname "$(cargo locate-project --workspace | jq --raw-output '.root')")"
+workspace_config="${workspace_root}/.config/nextest.toml"
+rule="${workspace_config}:${USER_CONFIG_FILE}:file"
+
+if [[ ! -f "${workspace_config}" ]]; then
+  # No repo-level config file
+
+  if [[ -f "${USER_CONFIG_FILE}" ]]; then
+    # User-level config file exists, need to boxx up nextest
+    boxxy --log-level warn --no-config --rule "${rule}" cargo-nextest "$@" 
+    exit 0
+  fi
+fi
+
+# Criteria not met; Do not override existing nextest config
+command cargo-nextest "$@"  
