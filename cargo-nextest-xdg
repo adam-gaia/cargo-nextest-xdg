@@ -34,7 +34,7 @@ if [[ ! -f ${workspace_config} ]]; then
 
   if [[ -f ${USER_CONFIG_FILE} ]]; then
     # User-level config file exists, need to boxx up nextest
-    exec boxxy --log-level warn --no-config --rule "${rule}" cargo-nextest "$@"
+    exec boxxy --log-level warn --no-config --rule "${rule}" cargo nextest "$@"
   fi
 fi
 
