@@ -1,4 +1,4 @@
-{pkgs, ...}: 
+{pkgs, ...}:
 pkgs.writeShellApplication {
   name = "cargo-nextest";
 
@@ -8,5 +8,5 @@ pkgs.writeShellApplication {
     jq
   ];
 
-  text = (builtins.readFile ./cargo-nextest-xdg);
+  text = builtins.readFile ./cargo-nextest-xdg;
 }
